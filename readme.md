@@ -36,8 +36,8 @@ Works with the following services:
 - Archive.org
 - Youtube
 
-TODO: 
--[ ] Automatically save in event folders  
--[ ] Create a uniform formatting  
--[ ] Add metadata for easy searching (artist/event) to file  
--[ ] Add extra services  
+TODO:   
+- [ ]  Automatically save in event folders  
+- [ ] Create a uniform formatting  
+- [ ]  Add metadata for easy searching (artist/event) to file  
+- [ ] Add extra services  
