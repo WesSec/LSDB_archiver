@@ -4,7 +4,7 @@ This tool helps you to archive livesets from LSDB!
 ### **Disclaimer**
 This is some hacky script i quickly wrote, it comes with absolutely no warranty or whatsoever, it works or it doesn't.
 You can try to open an issue on github   
-I am in no way associated with LSDB.
+I am in no way associated with LSDB. If this script violates any kind of policy please let me know.
   
 
 ### **How does this work:**
@@ -28,7 +28,7 @@ Run `python3 main.py` with the desired arguments, -i or -l is required:
 You can find the set id by browsing lsdb.nl, searching for a set and look in the URL, eg:  
 `lsdb.nl/set/**3052**/noisecontrollers-emporium-2008-31-05-08`
 
-you can set force_mp3 to true in the config.ini file. This way the software tries to convert the audio file to mp3 (when it's downloaded in m4a or something), no guarantees tho.
+You can set force_mp3 to true in the config.ini file. This way the software tries to convert the audio file to mp3 (when it's downloaded in m4a or something), no guarantees tho.
 
 Works with the following services:
 - Mixcloud
