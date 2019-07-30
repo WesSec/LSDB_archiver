@@ -37,6 +37,7 @@ Works with the following services:
 - Youtube
 
 TODO:   
+- [ ] Create list for successful downloads and failed downloads so no duplicates will be downloaded
 - [ ] Option to download all sets from specific DJ
 - [ ] Option to download all sets from specific Event
 - [ ] Automatically save in event folders  
