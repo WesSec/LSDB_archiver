@@ -23,7 +23,7 @@ Make sure ffmpeg is installed, otherwise:
 ### **Usage**  
 Run `python3 main.py` with the desired arguments, -i or -l is required:  
 `-i [SET ID]`  
-`-l [LIST WITH SET ID'S, a .txt file with each ID on a new line`  
+`-l [LIST WITH SET ID'S, a .txt file with each ID on a new line]`  
 `-o [OUTPUT LOCATION WITHOUT THE LAST SLASH, eg: /home/user/livesets]`  
 You can find the set id by browsing lsdb.nl, searching for a set and look in the URL, eg:  
 `lsdb.nl/set/**3052**/noisecontrollers-emporium-2008-31-05-08`
@@ -37,7 +37,7 @@ Works with the following services:
 - Youtube
 
 TODO: 
--[ ] Automatically save in event folders
--[ ] Create a uniform formatting
--[ ] Add metadata for easy searching (artist/event) to file
--[ ] Add extra services
+-[ ] Automatically save in event folders  
+-[ ] Create a uniform formatting  
+-[ ] Add metadata for easy searching (artist/event) to file  
+-[ ] Add extra services  
