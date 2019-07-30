@@ -6,7 +6,7 @@ This is some hacky script i quickly wrote, it comes with absolutely no warranty 
 You can try to open an issue on github   
   
 
-###**How does this work:**
+### **How does this work:**
 1. Install the software
 2. Use the software
 3. ????
