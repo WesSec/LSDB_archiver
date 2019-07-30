@@ -37,7 +37,9 @@ Works with the following services:
 - Youtube
 
 TODO:   
-- [ ]  Automatically save in event folders  
+- [ ] Option to download all sets from specific DJ
+- [ ] Option to download all sets from specific Event
+- [ ] Automatically save in event folders  
 - [ ] Create a uniform formatting  
-- [ ]  Add metadata for easy searching (artist/event) to file  
+- [ ] Add metadata for easy searching (artist/event) to file  
 - [ ] Add extra services  

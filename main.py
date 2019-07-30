@@ -34,11 +34,11 @@ def DownloadSet(setID):
 				if golink:
 					print("Only a zippy link found, download manual here: " + "https://lsdb.nl" + golink[0]['href'])
 				else:
-					print("No link found, i'm sorry :( ")
+					print("No link found, i'm sorry :(, set ID: " + setID)
 					return
 
 	else:
-		print("Something went wrong, 39.")
+		print("Something went wrong while looking up download link. exiting..")
 		sys.exit()
 
 
@@ -57,7 +57,7 @@ def FollowDownloadLink(go_url, provider):
 		elif provider == 'direct':
 			directdownload(downloadlink[1].string)
 	else:
-		print("Something went wrong. 58.")
+		print("Something went wrong. exiting program")
 		sys.exit()
 
 
