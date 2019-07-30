@@ -30,3 +30,14 @@ You can find the set id by browsing lsdb.nl, searching for a set and look in the
 
 you can set force_mp3 to true in the config.ini file. This way the software tries to convert the audio file to mp3 (when it's downloaded in m4a or something), no guarantees tho.
 
+Works with the following services:
+- Mixcloud
+- Soundcloud
+- Archive.org
+- Youtube
+
+TODO: 
+-[ ] Automatically save in event folders
+-[ ] Create a uniform formatting
+-[ ] Add metadata for easy searching (artist/event) to file
+-[ ] Add extra services
