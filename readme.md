@@ -21,7 +21,7 @@ Make sure ffmpeg is installed, otherwise:
 `sudo apt install ffmpeg`
 
 ### **Usage**  
-Run `python3 main.py` with the desired arguments, -i or -l is required:
+Run `python3 main.py` with the desired arguments, -i or -l is required:  
 `-i [SET ID]`  
 `-l [LIST WITH SET ID'S, a .txt file with each ID on a new line`  
 `-o [OUTPUT LOCATION WITHOUT THE LAST SLASH, eg: /home/user/livesets]`  
