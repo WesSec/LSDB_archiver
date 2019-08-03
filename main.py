@@ -13,28 +13,43 @@ import config
 prog_path = os.path.dirname(os.path.abspath(__file__))
 
 
+def GetMetadata(soup):
+	# Retrieve Artist name
+	metadata = {}
+	artists = soup.select("a[href*=artist]")
+	# Retrieve Event name
+	event = soup.select_one("a[href*=event]").text
+	# Combine artist names if b2b set
+	artist = ' & '.join(rat.text for rat in artists)
+	metadata.update({'Artist': artist})
+	# combine full filename
+	return artist + " @ " + event
+
 def DownloadSet(setID):
 	result = requests.get("https://lsdb.nl/set/" + setID)
 	if result.status_code == 200:
-		# Check if youtube/mixcloud/soundcloud is available
 		soup = BeautifulSoup(result.content, "html.parser")
+		# Check if youtube/mixcloud/soundcloud are available
 		reg = re.compile(r'you|mixcloud|soundcloud')
 		golink = [e for e in soup.find_all('a') if reg.match(e.text)]
+		filename = GetMetadata(soup)
 		# If youtube/mixcloud/soundcloud is available, letsgodownload
 		if golink:
-			FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'ytdl')
+			FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'ytdl', filename)
+		# If not, try to download using archive.org
 		else:
 			reg = re.compile(r'archive.org')
 			golink = [e for e in soup.find_all('a') if reg.match(e.text)]
 			if golink:
-				FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'direct')
+				FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'direct', filename)
 			else:
-				reg = re.compile(r'you|mixcloud|soundcloud')
+				reg = re.compile(r'zippy')
 				golink = [e for e in soup.find_all('a') if reg.match(e.text)]
 				if golink:
-					print("Only a zippy link found, download manual here: " + "https://lsdb.nl" + golink[0]['href'])
+					print("Only a zippy link found, download manual here: " + "https://lsdb.nl" + golink[0]['href'],
+					      filename)
 				else:
-					print("No link found, i'm sorry :(, set ID: " + setID)
+					print("No download found, i'm sorry :(, set ID: " + setID)
 					return
 
 	else:
@@ -42,7 +57,7 @@ def DownloadSet(setID):
 		sys.exit()
 
 
-def FollowDownloadLink(go_url, provider):
+def FollowDownloadLink(go_url, provider, filename):
 	# Actual link is behind a referral url.
 	result = requests.get(go_url)
 	if result.status_code == 200:
@@ -92,17 +107,19 @@ def ytdownload(link):
 
 
 if __name__ == '__main__':
+	# Load arguments
 	args = config.loadargs()
 	config = config.Load_config()
+	# If custom location is set, use it
 	if args.output:
 		output = args.output
+	# If no custom location is set: use project directory
 	else:
 		output = prog_path
+	# If ID is given, try to download the specific ID, error if something goes wrong
 	if args.ID:
-		try:
-			DownloadSet(str(args.ID))
-		except:
-			print("something went wrong, please double check your set ID")
+		DownloadSet(args.ID)
+	# If list with ID's is provided, loop through file and try download for each setID
 	if args.list:
 		try:
 			f = open(args.list, "r")
