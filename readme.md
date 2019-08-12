@@ -13,6 +13,20 @@ I am in no way associated with LSDB. If this script violates any kind of policy 
 3. ????
 4. Profit, and some saved livesets
 
+Actually:
+1. It goes to LSDB by using the setID provided
+2. It gets the actual download URL
+3. It downloads the file
+4. It creates a folder for each "event" (e.g. "Qlimax 2010")
+5. It saves the file in the event folder (final result will be ../Qlimax 2010/Noisecontroller @ Qlimax 2009.mp3) 
+
+Example command:
+
+```
+python3 main.py - i 32941 -o /home/user/muziek
+```
+
+
 ### **Installation instructions**
 The obvious:  
 `git clone this repo`  
@@ -40,7 +54,7 @@ TODO:
 - [ ] Create list for successful downloads and failed downloads so no duplicates will be downloaded
 - [ ] Option to download all sets from specific DJ
 - [ ] Option to download all sets from specific Event
-- [ ] Automatically save in event folders  
-- [ ] Create a uniform formatting  
+- [x] Automatically save in event folders  
+- [x] Create a uniform formatting  
 - [ ] Add metadata for easy searching (artist/event) to file  
 - [ ] Add extra services  
