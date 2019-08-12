@@ -21,10 +21,14 @@ def GetMetadata(soup):
 	event = soup.select_one("a[href*=event]").text
 	# Combine artist names if b2b set
 	artist = ' & '.join(rat.text for rat in artists)
+	# Write data into dict
 	metadata.update({'Artist': artist})
+	metadata.update({'Event': event})
 	# combine full filename
-	return artist + " @ " + event
+	return metadata
 
+
+# Get setdata from LSDB and check for availability
 def DownloadSet(setID):
 	result = requests.get("https://lsdb.nl/set/" + setID)
 	if result.status_code == 200:
@@ -32,22 +36,22 @@ def DownloadSet(setID):
 		# Check if youtube/mixcloud/soundcloud are available
 		reg = re.compile(r'you|mixcloud|soundcloud')
 		golink = [e for e in soup.find_all('a') if reg.match(e.text)]
-		filename = GetMetadata(soup)
+		metadata = GetMetadata(soup)
 		# If youtube/mixcloud/soundcloud is available, letsgodownload
 		if golink:
-			FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'ytdl', filename)
+			FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'ytdl', metadata)
 		# If not, try to download using archive.org
 		else:
 			reg = re.compile(r'archive.org')
 			golink = [e for e in soup.find_all('a') if reg.match(e.text)]
 			if golink:
-				FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'direct', filename)
+				FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'direct', metadata)
 			else:
 				reg = re.compile(r'zippy')
 				golink = [e for e in soup.find_all('a') if reg.match(e.text)]
 				if golink:
 					print("Only a zippy link found, download manual here: " + "https://lsdb.nl" + golink[0]['href'],
-					      filename)
+					      metadata)
 				else:
 					print("No download found, i'm sorry :(, set ID: " + setID)
 					return
@@ -57,7 +61,8 @@ def DownloadSet(setID):
 		sys.exit()
 
 
-def FollowDownloadLink(go_url, provider, filename):
+# Check go URL and get actual link
+def FollowDownloadLink(go_url, provider, metadata):
 	# Actual link is behind a referral url.
 	result = requests.get(go_url)
 	if result.status_code == 200:
@@ -66,44 +71,52 @@ def FollowDownloadLink(go_url, provider, filename):
 		downloadlink = soup.find_all("a")
 		# Debug purposes
 		print(downloadlink[1].string)
+		# Create event directory if not existing
+		MakeDir(metadata['Event'])
 		# Actual download command (zippy not supported at this moment
 		if provider == 'ytdl':
-			ytdownload(downloadlink[1].string)
+			ytdownload(downloadlink[1].string, metadata)
 		elif provider == 'direct':
-			directdownload(downloadlink[1].string)
+			directdownload(downloadlink[1].string, metadata)
 	else:
 		print("Something went wrong. exiting program")
 		sys.exit()
 
 
+# checks if event directory exists, othewise creates it
+def MakeDir(event):
+	if not os.path.exists(output + "/" + event):
+		os.makedirs(output + "/" + event)
+
+
 # Used for archive.org
-def directdownload(link):
+def directdownload(link, metadata):
 	print("start download using direct download")
 	if link.find('/'):
-		filename = link.rsplit('/', 1)[1]
+		ext = link.rsplit('.', 1)[1]
 		r = requests.get(link)
-		with open(output + '/' + filename, 'wb') as f:
+		with open(output + '/' + metadata['Event'] + '/' + metadata['Artist'] + " @ " + metadata['Event'] + "." + ext,
+		          'wb') as f:
 			f.write(r.content)
-			print("download finished: " + filename)
+			print("download finished: " + metadata['Artist'] + " @ " + metadata['Event'])
 
 
-def ytdownload(link):
+def ytdownload(link, metadata):
+	download_location = output + '/' + metadata['Event'] + '/' + metadata['Artist'] + " @ " + metadata[
+		'Event'] + '.%(ext)s'
 	# Check config file if mp3 is needed, otherwise download mp3/m4a. Note: mp3 conversion make the scrape slow as fuck.
 	if config.getboolean('DEFAULT', 'force_mp3'):
-		ydl_opts = {'outtmpl': output + '/%(title)s.%(ext)s', 'format': 'bestaudio/best', 'quiet': 'true',
+		ydl_opts = {'outtmpl': download_location, 'format': 'bestaudio/best', 'quiet': 'true',
 		            'postprocessors': [{
 			            'key': 'FFmpegExtractAudio',
 			            'preferredcodec': 'mp3',
 		            }], }
 	else:
-		ydl_opts = {'outtmpl': output + '/%(title)s.%(ext)s', 'quiet': 'true', 'format': 'bestaudio/best', }
+		ydl_opts = {'outtmpl': download_location, 'quiet': 'true', 'format': 'bestaudio/best', }
 	# Download the shit
 	with youtube_dl.YoutubeDL(ydl_opts) as ydl:
 		ydl.download([link])
-		# Get info from video, which is used for recalling the file
-		info_dict = ydl.extract_info(link, download=False)
-		filename = info_dict.get('title', None)
-	print(filename)
+		print(download_location)
 
 
 if __name__ == '__main__':
