@@ -13,7 +13,7 @@ import config
 prog_path = os.path.dirname(os.path.abspath(__file__))
 
 
-def GetMetadata(soup):
+def get_metadata(soup):
     # Retrieve Artist name
     metadata = {}
     artists = soup.select("a[href*=artist]")
@@ -29,23 +29,23 @@ def GetMetadata(soup):
 
 
 # Get setdata from LSDB and check for availability
-def DownloadSet(setID):
-    result = requests.get("https://lsdb.nl/set/" + setID)
+def download_set(set_id):
+    result = requests.get("https://lsdb.nl/set/" + set_id)
     if result.status_code == 200:
         soup = BeautifulSoup(result.content, "html.parser")
         # Check if youtube/mixcloud/soundcloud are available
         reg = re.compile(r'you|mixcloud|soundcloud')
         golink = [e for e in soup.find_all('a') if reg.match(e.text)]
-        metadata = GetMetadata(soup)
+        metadata = get_metadata(soup)
         # If youtube/mixcloud/soundcloud is available, letsgodownload
         if golink:
-            FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'ytdl', metadata)
+            follow_download_link("https://lsdb.nl" + golink[0]['href'], 'ytdl', metadata)
         # If not, try to download using archive.org
         else:
             reg = re.compile(r'archive.org')
             golink = [e for e in soup.find_all('a') if reg.match(e.text)]
             if golink:
-                FollowDownloadLink("https://lsdb.nl" + golink[0]['href'], 'direct', metadata)
+                follow_download_link("https://lsdb.nl" + golink[0]['href'], 'direct', metadata)
             else:
                 reg = re.compile(r'zippy')
                 golink = [e for e in soup.find_all('a') if reg.match(e.text)]
@@ -53,7 +53,7 @@ def DownloadSet(setID):
                     print("Only a zippy link found, download manual here: " + "https://lsdb.nl" + golink[0]['href'],
                           metadata)
                 else:
-                    print("No download found, i'm sorry :(, set ID: " + setID)
+                    print("No download found, i'm sorry :(, set ID: " + set_id)
                     return
 
     else:
@@ -62,7 +62,7 @@ def DownloadSet(setID):
 
 
 # Check go URL and get actual link
-def FollowDownloadLink(go_url, provider, metadata):
+def follow_download_link(go_url, provider, metadata):
     # Actual link is behind a referral url.
     result = requests.get(go_url)
     if result.status_code == 200:
@@ -72,25 +72,25 @@ def FollowDownloadLink(go_url, provider, metadata):
         # Debug purposes
         print(downloadlink[1].string)
         # Create event directory if not existing
-        MakeDir(metadata['Event'])
+        make_dir(metadata['Event'])
         # Actual download command (zippy not supported at this moment
         if provider == 'ytdl':
-            ytdownload(downloadlink[1].string, metadata)
+            yt_download(downloadlink[1].string, metadata)
         elif provider == 'direct':
-            directdownload(downloadlink[1].string, metadata)
+            direct_download(downloadlink[1].string, metadata)
     else:
         print("Something went wrong. exiting program")
         sys.exit()
 
 
 # checks if event directory exists, othewise creates it
-def MakeDir(event):
+def make_dir(event):
     if not os.path.exists(output + "/" + event):
         os.makedirs(output + "/" + event)
 
 
 # Used for archive.org
-def directdownload(link, metadata):
+def direct_download(link, metadata):
     print("start download using direct download")
     if link.find('/'):
         ext = link.rsplit('.', 1)[1]
@@ -101,7 +101,7 @@ def directdownload(link, metadata):
             print("download finished: " + metadata['Artist'] + " @ " + metadata['Event'])
 
 
-def ytdownload(link, metadata):
+def yt_download(link, metadata):
     download_location = output + '/' + metadata['Event'] + '/' + metadata['Artist'] + " @ " + metadata[
         'Event'] + '.%(ext)s'
     # Check config file if mp3 is needed, otherwise download mp3/m4a. Note: mp3 conversion make the scrape slow as fuck.
@@ -121,8 +121,8 @@ def ytdownload(link, metadata):
 
 if __name__ == '__main__':
     # Load arguments
-    args = config.loadargs()
-    config = config.Load_config()
+    args = config.load_args()
+    config = config.load_config()
     # If custom location is set, use it
     if args.output:
         output = args.output
@@ -131,14 +131,14 @@ if __name__ == '__main__':
         output = prog_path
     # If ID is given, try to download the specific ID, error if something goes wrong
     if args.ID:
-        DownloadSet(args.ID)
+        download_set(args.ID)
     # If list with ID's is provided, loop through file and try download for each setID
     if args.list:
         try:
             f = open(args.list, "r")
             for line in f:
                 try:
-                    DownloadSet(line)
+                    download_set(line)
                 except:
                     print("something went wrong with setID: " + line)
         except:

@@ -5,7 +5,7 @@ import os
 parser = argparse.ArgumentParser()
 
 
-def loadargs():
+def load_args():
     parser.add_argument("-i", "--ID", help="Enter a set ID to download")
     parser.add_argument("-l", "--list",
                         help="Location of a list (txt, every ID on a new row) with setlists to download")
@@ -19,7 +19,7 @@ prog_path = os.path.dirname(os.path.abspath(__file__))
 
 
 # Import the config file
-def Load_config():
+def load_config():
     config = configparser.RawConfigParser(allow_no_value=True)
     config.read(prog_path + "/config.ini")
     return config
